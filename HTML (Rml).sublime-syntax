@@ -1,0 +1,50 @@
+%YAML 1.2
+---
+
+name: HTML (Rml)
+file_extensions:
+  - rml
+scope: embedding.rml
+extends: Packages/HTML/HTML.sublime-syntax
+version: 2
+
+contexts:
+
+  script-javascript:
+    - meta_scope: meta.tag.script.begin.html
+    - include: script-common
+    - match: '>'
+      scope: punctuation.definition.tag.end.html
+      set: script-lua-content
+
+  script-lua-content:
+    - meta_include_prototype: false
+    - match: '{{script_content_begin}}'
+      captures:
+        1: comment.block.rml punctuation.definition.common.begin.rml
+      pop: 1
+      embed: scope:source.lua
+      embed_scope: source.lua.embedded.html
+      escape: '{{script_content_end}}'
+      escape_captures:
+        1: source.lua.embedded.html
+        2: comment.block.html punctuation.definition.comment.end.html
+        3: source.lua.embedded.html
+        4: comment.block.html punctuation.definition.comment.end.html
+
+  tag-event-attribute-value:
+    - match: \"
+      scope: meta.string.html string.quoted.double.html punctuation.definition.string.begin.html
+      embed: scope:source.lua
+      embed_scope: meta.string.html meta.interpolation.html source.lua.embedded.html
+      escape: \"
+      escape_captures:
+        0: meta.string.html string.quoted.double.html punctuation.definition.string.end.html
+    - match: \'
+      scope: meta.string.html string.quoted.single.html punctuation.definition.string.begin.html
+      embed: scope:source.lua
+      embed_scope: meta.string.html meta.interpolation.html source.lua.embedded.html
+      escape: \'
+      escape_captures:
+        0: meta.string.html string.quoted.single.html punctuation.definition.string.end.html
+    - include: else-pop
