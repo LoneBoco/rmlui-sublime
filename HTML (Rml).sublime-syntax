@@ -48,3 +48,48 @@ contexts:
       escape_captures:
         0: meta.string.html string.quoted.single.html punctuation.definition.string.end.html
     - include: else-pop
+
+
+  style-css-content:
+    - meta_include_prototype: false
+    - match: \s*((<!\[)(CDATA)(\[))
+      captures:
+        1: meta.tag.sgml.cdata.html
+        2: punctuation.definition.tag.begin.html
+        3: keyword.declaration.cdata.html
+        4: punctuation.definition.tag.begin.html
+      pop: 1  # make sure to match only once
+      embed: scope:embedding.rcss
+      embed_scope: meta.tag.sgml.cdata.html source.rcss.embedded.html
+      escape: \]\]>
+      escape_captures:
+        0: meta.tag.sgml.cdata.html punctuation.definition.tag.end.html
+    - match: '{{style_content_begin}}'
+      captures:
+        1: comment.block.html punctuation.definition.comment.begin.html
+      pop: 1  # make sure to match only once
+      embed: scope:embedding.rcss
+      embed_scope: source.rcss.embedded.html
+      escape: '{{style_content_end}}'
+      escape_captures:
+        1: source.rcss.embedded.html
+        2: comment.block.html punctuation.definition.comment.end.html
+        3: source.rcss.embedded.html
+        4: comment.block.html punctuation.definition.comment.end.html
+
+  tag-style-attribute-value:
+    - match: \"
+      scope: meta.string.html string.quoted.double.html punctuation.definition.string.begin.html
+      embed: scope:embedding.rcss#rule-list-body
+      embed_scope: meta.string.html meta.interpolation.html source.rcss.embedded.html
+      escape: \"
+      escape_captures:
+        0: meta.string.html string.quoted.double.html punctuation.definition.string.end.html
+    - match: \'
+      scope: meta.string.html string.quoted.single.html punctuation.definition.string.begin.html
+      embed: scope:embedding.rcss#rule-list-body
+      embed_scope: meta.string.html meta.interpolation.html source.rcss.embedded.html
+      escape: \'
+      escape_captures:
+        0: meta.string.html string.quoted.single.html punctuation.definition.string.end.html
+    - include: else-pop

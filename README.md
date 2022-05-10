@@ -1,7 +1,7 @@
 # rml-sublime
 RmlUi syntax definition for Sublime Text 4.
 
-Supports .rml files.  RCSS files (.rcss) are not supported at this time.
+Supports both .rml and .rcss files.
 
 ## Dependencies
 

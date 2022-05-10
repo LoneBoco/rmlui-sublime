@@ -1,0 +1,132 @@
+%YAML 1.2
+---
+
+name: CSS (Rml)
+scope: embedding.rcss
+extends: Packages/CSS/CSS.sublime-syntax
+version: 2
+
+file_extensions:
+  - rcss
+
+variables:
+
+  rml_tags: |-
+    \b(?xi: datagrid | dataselect | datacombo | tabset | tabs | color ){{break}}
+
+  spritesheet_property_names: |-
+    \b(?xi: src | resolution ){{break}}
+
+  decorator_types: |-
+    \b(?xi:
+      tiled-horizontal | tiled-vertical | tiled-box
+    | image | ninepatch | gradient
+    ){{break}}
+
+  decorator_property_names: |-
+    \b(?xi: decorator ){{break}}
+
+contexts:
+
+  selector-content:
+    - meta_prepend: true
+    - match: '{{rml_tags}}'
+      scope: entity.name.tag.html.css
+
+  property-identifier-content:
+    - meta_prepend: true
+    - include: decorator-property
+
+  at-rules:
+    - meta_prepend: true
+    - include: at-spritesheet
+    - include: at-decorator
+
+  # decorator properties
+  decorator-property:
+    - match: '{{decorator_property_names}}'
+      scope: support.type.property-name.css
+      pop: 1
+
+  # @spritesheet
+  # https://mikke89.github.io/RmlUiDoc/pages/rcss/sprite_sheets.html
+  at-spritesheet:
+    - match: (@)(?i:spritesheet){{break}}
+      captures:
+        0: keyword.control.directive.rcss
+        1: punctuation.definition.keyword.rcss
+      push: at-spritesheet-content
+
+  at-spritesheet-content:
+    - meta_scope: meta.at-rule.spritesheet.rcss
+    - match: \{
+      scope: punctuation.section.block.begin.css
+      push: at-spritesheet-block-content
+    - include: at-spritesheet-name
+    - include: at-rule-end
+
+  at-spritesheet-block-content:
+    - meta_scope: meta.property-list.css meta.block.css
+    - include: block-end2
+    - include: comments
+    - include: at-spritesheet-property-names
+    - include: property-values
+    - include: rule-terminators
+    - include: illegal-blocks
+    - include: illegal-groups
+
+  at-spritesheet-name:
+    - match: '{{illegal_custom_ident}}'
+      scope: invalid.illegal.identifier.css
+    - match: '{{ident}}'
+      scope: entity.other.spritesheet-name.css
+
+  at-spritesheet-property-names:
+    - include: counter-style-fallback-properties
+    - include: counter-style-system-properties
+    - include: counter-style-speak-as-properties
+    - match: '{{spritesheet_property_names}}'
+      scope: meta.property-name.css support.type.property-name.css
+
+  # @decorator
+  # https://mikke89.github.io/RmlUiDoc/pages/rcss/decorators.html
+  at-decorator:
+    - match: (@)(?i:decorator){{break}}
+      captures:
+        0: keyword.control.directive.rcss
+        1: punctuation.definition.keyword.rcss
+      push: at-decorator-content
+
+  at-decorator-content:
+    - meta_scope: meta.at-rule.decorator.rcss
+    - match: \{
+      scope: punctuation.section.block.begin.css
+      push: at-decorator-block-content
+    - include: at-decorator-name
+    - include: at-rule-end
+
+  at-decorator-block-content:
+    - meta_scope: meta.property-list.css meta.block.css
+    - include: block-end2
+    - include: comments
+    - include: at-decorator-property-names
+    - include: property-values
+    - include: rule-terminators
+    - include: illegal-blocks
+    - include: illegal-groups
+
+  at-decorator-name:
+    - match: '({{ident}})\s*:'
+      captures:
+        1: entity.other.decorator-name.css
+    - match: '{{decorator_types}}'
+      scope: support.type.decorator-type.css
+    - match: '{{illegal_custom_ident}}'
+      scope: invalid.illegal.identifier.css
+    - match: '{{ident}}:'
+      scope: entity.other.decorator-name.css
+
+  at-decorator-property-names:
+    - include: counter-style-fallback-properties
+    - include: counter-style-system-properties
+    - include: counter-style-speak-as-properties
