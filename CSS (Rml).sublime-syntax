@@ -14,6 +14,16 @@ variables:
   rml_tags: |-
     \b(?xi: datagrid | dataselect | datacombo | tabset | tabs | color ){{break}}
 
+  rml_property_names: |-
+    \b(?xi: tab-index | drag | focus | image-color ){{break}}
+
+  rml_units: |-
+    (?x:
+      %
+    | {{rml_resolution_units}}
+    )
+  rml_resolution_units: (?i:dp)\b
+
   spritesheet_property_names: |-
     \b(?xi: src | resolution ){{break}}
 
@@ -26,21 +36,61 @@ variables:
   decorator_property_names: |-
     \b(?xi: decorator ){{break}}
 
+  # Removed inherit.
+  rml_notsupported_constants:  |-
+    \b(?xi: inherit ){{break}}
+
 contexts:
 
+  # Overwrite to support RmlUi element tags.
   selector-content:
     - meta_prepend: true
     - match: '{{rml_tags}}'
-      scope: entity.name.tag.html.css
+      scope: entity.name.tag.html.rcss
 
-  property-identifier-content:
+  # Overwrite to support RmlUi CSS properties.
+  builtin-property:
     - meta_prepend: true
-    - include: decorator-property
+    - match: '{{rml_property_names}}'
+      scope: support.type.property-name.rcss
+      pop: 1
 
+  # Overwrite to support RmlUi units.
+  numeric-constants:
+    - meta_prepend: true
+    - match: '{{float}}({{rml_units}})'
+      scope: meta.number.float.decimal.css
+      captures:
+        1: keyword.operator.arithmetic.css
+        2: constant.numeric.value.css
+        3: punctuation.separator.decimal.css
+        4: constant.numeric.suffix.rcss
+    - match: '{{integer}}({{rml_units}})'
+      scope: meta.number.integer.decimal.css
+      captures:
+        1: keyword.operator.arithmetic.css
+        2: constant.numeric.value.css
+        3: constant.numeric.suffix.rcss
+
+  # Overwrite to remove non-supported identifiers and constants.
+  global-constants:
+    - meta_prepend: true
+    - match: '{{rml_notsupported_constants}}'
+      scope: invalid.not-supported.identifier.rcss
+  important-operators:
+    - match: \!\s*(?i:important){{break}}
+      scope: invalid.not-supported.identifier.rcss
+
+  # Overwritten to support RmlUi @ rules.
   at-rules:
     - meta_prepend: true
     - include: at-spritesheet
     - include: at-decorator
+
+  # decorator starter
+  property-identifier-content:
+    - meta_prepend: true
+    - include: decorator-property
 
   # decorator properties
   decorator-property:

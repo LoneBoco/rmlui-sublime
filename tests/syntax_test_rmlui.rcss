@@ -1,0 +1,64 @@
+--! SYNTAX TEST "CSS (Rml).sublime-syntax"
+        body {
+            font-family: rmlui-debugger-font;
+            font-weight: normal;
+            font-style: normal;
+            font-size: 16dp;
+--!                    ^^ constant.numeric.value.css
+--!                      ^^ constant.numeric.suffix.rcss
+        }
+        #code {
+            display: block;
+            white-space: pre-wrap;
+            font-size: 0.9em;
+            padding: 20px 30dp;
+--!                    ^^ constant.numeric.suffix.css
+--!                         ^^ constant.numeric.suffix.rcss
+        }
+        #rmlui-properties {
+            width: 50dp;
+            tab-index: auto;
+--!         ^^^^^^^^^ support.type.property-name.rcss
+            drag: drag-drop;
+--!         ^^^^ support.type.property-name.rcss
+            focus: auto !important;
+--!                     ^^^^^^^^^^ invalid.not-supported.identifier.rcss
+            height: inherit;
+--!                 ^^^^^^^ invalid.not-supported.identifier.rcss
+        }
+        .rmlui-img:hover {
+            image-color: rgba(255, 160, 160, 200);
+--!         ^^^^^^^^^^^ support.type.property-name.rcss
+        }
+        @spritesheet health {
+--!     ^^^^^^^^^^^^        meta.at-rule.spritesheet.rcss keyword.control.directive.rcss
+--!                  ^^^^^^ meta.at-rule.spritesheet.rcss entity.other.spritesheet-name.css
+            src: health.png;
+            resolution: 1x;
+            big: 0px 0px 40px 44px;
+--!         ^^^ meta.at-rule.spritesheet.rcss meta.property-list.css meta.block.css
+            small: 80px 0px 31px 33px;
+        }
+        .rmlui-img {
+            decorator: image(health);
+--!         ^^^^^^^^^                support.type.property-name.css
+--!                    ^^^^^         support.function.image.css
+--!                         ^        punctuation.section.group.begin.css
+--!                          ^^^^^^  meta.group.css
+--!                                ^ punctuation.section.group.end.css
+            decorator: tiled-box(window-l, window-c, window-r);
+--!         ^^^^^^^^^                     support.type.property-name.css
+--!                    ^^^^^^^^^          variable.function.css
+--!                              ^^^^^^^^ constant.other.css
+        }
+        @decorator name : type {
+--!     ^^^^^^^^^^               meta.at-rule.decorator.rcss keyword.control.directive.rcss
+--!                ^^^^          meta.at-rule.decorator.rcss entity.other.decorator-name.css
+--!                       ^^^^   meta.at-rule.decorator.rcss
+            custom-property: 5;
+--!         ^^^^^^^^^^^^^^^      meta.at-rule.decorator.rcss meta.property-list.css meta.block.css
+--!                          ^   meta.property-value.css
+        }
+        .rmlui-img2 {
+            decorator: name;
+        }

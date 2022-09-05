@@ -10,13 +10,6 @@ version: 2
 
 contexts:
 
-  script-javascript:
-    - meta_scope: meta.tag.script.begin.html
-    - include: script-common
-    - match: '>'
-      scope: punctuation.definition.tag.end.html
-      set: script-lua-content
-
   script-lua-content:
     - meta_include_prototype: false
     - match: '{{script_content_begin}}'
@@ -32,6 +25,27 @@ contexts:
         3: source.lua.embedded.html
         4: comment.block.html punctuation.definition.comment.end.html
 
+  # Overwritten to support <rml>
+  tag-html:
+    - meta_prepend: true
+    - match: (</?)((?i:rml){{tag_name_break}})
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.structure.any.rml
+      push:
+        - meta_scope: meta.tag.structure.any.html
+        - include: tag-end
+        - include: tag-attributes
+
+  # Overwritten to call script-lua-content to embed source.lua.
+  script-javascript:
+    - meta_scope: meta.tag.script.begin.html
+    - include: script-common
+    - match: '>'
+      scope: punctuation.definition.tag.end.html
+      set: script-lua-content
+
+  # Overwritten to embed source.lua.
   tag-event-attribute-value:
     - match: \"
       scope: meta.string.html string.quoted.double.html punctuation.definition.string.begin.html
@@ -49,7 +63,7 @@ contexts:
         0: meta.string.html string.quoted.single.html punctuation.definition.string.end.html
     - include: else-pop
 
-
+  # Overwritten to embed embedding.rcss.
   style-css-content:
     - meta_include_prototype: false
     - match: \s*((<!\[)(CDATA)(\[))
@@ -77,6 +91,7 @@ contexts:
         3: source.rcss.embedded.html
         4: comment.block.html punctuation.definition.comment.end.html
 
+  # Overwritten to embed embedding.rcss.
   tag-style-attribute-value:
     - match: \"
       scope: meta.string.html string.quoted.double.html punctuation.definition.string.begin.html
